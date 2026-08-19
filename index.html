@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -29,18 +30,18 @@
     }
 
     .contenedor {
-      max-width: 600px;
+      max-width: 620px;
       margin: auto;
-      padding: 20px;
+      padding: 18px;
     }
 
     .encabezado {
       background: #0b3d71;
       color: white;
-      padding: 25px;
+      padding: 24px;
       border-radius: 18px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .encabezado h1 {
@@ -50,18 +51,38 @@
 
     .encabezado p {
       margin: 8px 0 0;
+      opacity: 0.95;
     }
 
     .tarjeta {
       background: white;
       border-radius: 18px;
-      padding: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
       box-shadow:
         0 5px 18px rgba(0,0,0,0.08);
     }
 
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 17px;
+      background: white;
+    }
+
     button {
       width: 100%;
+      margin-top: 18px;
       padding: 17px;
       border: none;
       border-radius: 12px;
@@ -70,46 +91,73 @@
       font-size: 19px;
       font-weight: bold;
       cursor: pointer;
-      margin-bottom: 18px;
+    }
+
+    button:disabled {
+      opacity: 0.6;
     }
 
     #reader {
       width: 100%;
       overflow: hidden;
-      border-radius: 15px;
+      border-radius: 16px;
     }
 
     #estado {
       text-align: center;
       font-weight: bold;
-      margin: 15px 0;
+      padding: 10px;
+      margin-bottom: 10px;
     }
 
-    #resultado {
-      display: none;
-      margin-top: 20px;
-      padding: 20px;
+    .activo {
+      color: #15803d;
+    }
+
+    .procesando {
+      color: #b45309;
+    }
+
+    .errorLocal {
+      margin-top: 15px;
+      padding: 16px;
+      border-radius: 12px;
       text-align: center;
-      border-radius: 15px;
-      background: #dcfce7;
-      border: 2px solid #16a34a;
-      color: #14532d;
+      background: #fee2e2;
+      border: 2px solid #dc2626;
+      color: #7f1d1d;
+      display: none;
     }
 
-    .token {
-      font-size: 22px;
-      font-weight: bold;
-      margin-top: 10px;
-      word-break: break-all;
+    #zonaResultado {
+      display: none;
+      margin-top: 15px;
+    }
+
+    #resultadoFrame {
+      width: 100%;
+      height: 235px;
+      border: 0;
+      border-radius: 15px;
+      background: transparent;
+    }
+
+    .pie {
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 15px;
     }
 
   </style>
+
 </head>
 
 
 <body>
 
 <div class="contenedor">
+
 
   <div class="encabezado">
 
@@ -126,141 +174,475 @@
 
   <div class="tarjeta">
 
+    <label for="tablet">
+      Tablet
+    </label>
+
+    <select id="tablet">
+
+      <option value="TABLET-01">
+        TABLET-01
+      </option>
+
+      <option value="TABLET-02">
+        TABLET-02
+      </option>
+
+      <option value="TABLET-03">
+        TABLET-03
+      </option>
+
+    </select>
+
+
+    <label for="monitor">
+      Monitor responsable
+    </label>
+
+    <input
+      id="monitor"
+      type="text"
+      autocomplete="off"
+      placeholder="Nombre del estudiante monitor"
+    >
+
+
+    <label for="pin">
+      PIN del sistema
+    </label>
+
+    <input
+      id="pin"
+      type="password"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="Digite el PIN"
+    >
+
+
     <button
-      id="boton"
+      id="btnIniciar"
       onclick="iniciarCamara()"
     >
-      📷 INICIAR CÁMARA
+      📷 INICIAR ESCÁNER
     </button>
 
+  </div>
+
+
+  <div class="tarjeta">
 
     <div id="estado">
       Cámara detenida
     </div>
 
-
     <div id="reader"></div>
 
+    <div
+      id="errorLocal"
+      class="errorLocal">
+    </div>
 
-    <div id="resultado">
 
-      <div>
-        ✅ CÓDIGO LEÍDO
-      </div>
+    <div id="zonaResultado">
 
-      <div
-        id="token"
-        class="token">
-      </div>
+      <iframe
+        id="resultadoFrame"
+        name="resultadoFrame"
+        title="Resultado del registro"
+        onload="respuestaCargada()">
+      </iframe>
 
     </div>
 
   </div>
 
+
+  <div class="pie">
+    Sistema de asistencia QR
+    <br>
+    Institución Educativa San José
+  </div>
+
 </div>
+
+
+
+<!--
+FORMULARIO OCULTO QUE ENVÍA LOS DATOS
+A GOOGLE APPS SCRIPT
+-->
+
+<form
+  id="formRegistro"
+  method="POST"
+  target="resultadoFrame"
+  action="https://script.google.com/macros/s/AKfycby5l9zBGlXhNlIljEcJbDWMEmHpSyP6aawsJ1lDFfwLXV8kJKItEMTXcJfMpOPpNncNzA/exec"
+  style="display:none;"
+>
+
+  <input
+    type="hidden"
+    name="token"
+    id="formToken"
+  >
+
+  <input
+    type="hidden"
+    name="tablet"
+    id="formTablet"
+  >
+
+  <input
+    type="hidden"
+    name="monitor"
+    id="formMonitor"
+  >
+
+  <input
+    type="hidden"
+    name="pin"
+    id="formPin"
+  >
+
+</form>
+
 
 
 <script>
 
-let lector = null;
-let iniciado = false;
-let ultimoCodigo = "";
+  let lector = null;
+
+  let iniciado = false;
+
+  let procesando = false;
+
+  let envioPendiente = false;
+
+  let ultimoCodigo = "";
+
+  let momentoUltimoCodigo = 0;
 
 
-async function iniciarCamara() {
 
-  if (iniciado) {
-    return;
-  }
+  async function iniciarCamara() {
 
-  const estado =
-    document.getElementById("estado");
+    const monitor =
+      document
+        .getElementById("monitor")
+        .value
+        .trim();
 
-  const boton =
-    document.getElementById("boton");
-
-  estado.innerText =
-    "Solicitando permiso para usar la cámara...";
-
-  boton.disabled = true;
+    const pin =
+      document
+        .getElementById("pin")
+        .value
+        .trim();
 
 
-  try {
+    if (!monitor) {
 
-    lector =
-      new Html5Qrcode("reader");
+      mostrarError(
+        "Debe escribir el nombre del monitor responsable."
+      );
 
-
-    await lector.start(
-
-      {
-        facingMode: "environment"
-      },
-
-      {
-        fps: 10,
-
-        qrbox: {
-          width: 250,
-          height: 250
-        }
-      },
-
-      function(codigo) {
-
-        if (codigo === ultimoCodigo) {
-          return;
-        }
-
-        ultimoCodigo = codigo;
-
-        document
-          .getElementById("token")
-          .innerText = codigo;
-
-        document
-          .getElementById("resultado")
-          .style.display = "block";
-
-        estado.innerText =
-          "🟢 Cámara activa - QR detectado";
-
-      },
-
-      function(errorLectura) {
-
-        // Los intentos fallidos normales
-        // de lectura se ignoran.
-
-      }
-
-    );
+      return;
+    }
 
 
-    iniciado = true;
+    if (!pin) {
+
+      mostrarError(
+        "Debe digitar el PIN del sistema."
+      );
+
+      return;
+    }
+
+
+    ocultarError();
+
+
+    if (iniciado) {
+      return;
+    }
+
+
+    const estado =
+      document.getElementById("estado");
+
+    const boton =
+      document.getElementById("btnIniciar");
+
+
+    boton.disabled = true;
+
+    estado.className = "";
 
     estado.innerText =
-      "🟢 CÁMARA ACTIVA";
-
-    boton.style.display =
-      "none";
+      "Solicitando acceso a la cámara...";
 
 
-  } catch (error) {
+    try {
 
-    console.error(error);
+      lector =
+        new Html5Qrcode("reader");
 
-    estado.innerHTML =
-      "❌ No fue posible abrir la cámara.<br><br>" +
-      "Revise los permisos de cámara del navegador.";
 
-    boton.disabled = false;
+      await lector.start(
+
+        {
+          facingMode: "environment"
+        },
+
+        {
+          fps: 10,
+
+          qrbox: {
+            width: 250,
+            height: 250
+          }
+        },
+
+        codigoDetectado,
+
+        function() {
+          // Los errores normales de lectura
+          // se ignoran.
+        }
+
+      );
+
+
+      iniciado = true;
+
+      boton.style.display = "none";
+
+      estado.className = "activo";
+
+      estado.innerText =
+        "🟢 ESCÁNER ACTIVO - Acerque el QR";
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      boton.disabled = false;
+
+      estado.className = "";
+
+      estado.innerText =
+        "❌ No se pudo iniciar la cámara.";
+
+      mostrarError(
+        "Revise los permisos de cámara del navegador."
+      );
+
+    }
 
   }
 
-}
+
+
+  function codigoDetectado(codigo) {
+
+    let token =
+      String(codigo || "")
+        .trim()
+        .toUpperCase();
+
+
+    // Solamente acepta códigos
+    // creados para San José
+    if (!token.startsWith("SJ11-")) {
+
+      mostrarError(
+        "❌ Este código QR no pertenece al sistema."
+      );
+
+      return;
+    }
+
+
+    const ahora =
+      Date.now();
+
+
+    /*
+      Evita que la cámara registre
+      repetidamente el mismo QR
+      mientras permanece frente a ella.
+    */
+
+    if (
+      token === ultimoCodigo &&
+      ahora - momentoUltimoCodigo < 10000
+    ) {
+
+      return;
+    }
+
+
+    // Mientras Google registra uno,
+    // no permite enviar otro.
+    if (procesando) {
+      return;
+    }
+
+
+    ocultarError();
+
+
+    procesando = true;
+
+    envioPendiente = true;
+
+    ultimoCodigo = token;
+
+    momentoUltimoCodigo = ahora;
+
+
+    const tablet =
+      document
+        .getElementById("tablet")
+        .value;
+
+    const monitor =
+      document
+        .getElementById("monitor")
+        .value
+        .trim();
+
+    const pin =
+      document
+        .getElementById("pin")
+        .value
+        .trim();
+
+
+    if (!monitor || !pin) {
+
+      procesando = false;
+      envioPendiente = false;
+
+      mostrarError(
+        "Falta el monitor o el PIN."
+      );
+
+      return;
+    }
+
+
+    // Coloca la información dentro
+    // del formulario oculto
+
+    document
+      .getElementById("formToken")
+      .value = token;
+
+    document
+      .getElementById("formTablet")
+      .value = tablet;
+
+    document
+      .getElementById("formMonitor")
+      .value = monitor;
+
+    document
+      .getElementById("formPin")
+      .value = pin;
+
+
+    // Muestra el área donde aparecerá
+    // la respuesta de Google
+
+    document
+      .getElementById("zonaResultado")
+      .style.display = "block";
+
+
+    const estado =
+      document.getElementById("estado");
+
+    estado.className = "procesando";
+
+    estado.innerText =
+      "⏳ REGISTRANDO ASISTENCIA...";
+
+
+    // Envía el QR a Apps Script
+
+    document
+      .getElementById("formRegistro")
+      .submit();
+
+  }
+
+
+
+  function respuestaCargada() {
+
+    /*
+      El iframe también se carga
+      una vez cuando abre la página.
+      Solo reaccionamos cuando
+      acabamos de enviar un QR.
+    */
+
+    if (!envioPendiente) {
+      return;
+    }
+
+
+    envioPendiente = false;
+
+    procesando = false;
+
+
+    const estado =
+      document.getElementById("estado");
+
+    estado.className = "activo";
+
+    estado.innerText =
+      "🟢 LISTO PARA EL SIGUIENTE ESTUDIANTE";
+
+
+    // Vibración breve en dispositivos
+    // que soporten esta función
+
+    if (navigator.vibrate) {
+      navigator.vibrate(100);
+    }
+
+  }
+
+
+
+  function mostrarError(mensaje) {
+
+    const caja =
+      document.getElementById("errorLocal");
+
+    caja.innerText = mensaje;
+
+    caja.style.display = "block";
+
+  }
+
+
+
+  function ocultarError() {
+
+    document
+      .getElementById("errorLocal")
+      .style.display = "none";
+
+  }
 
 </script>
+
 
 </body>
 
